@@ -1,5 +1,241 @@
 # 202330124 이태규
 
+## 25년 3월 27일 강의
+> 내용 정리
+**1. 학습 내용**
+1. component 생성 및 중첩 방법
+2. 마크업과 스타일을 추가하는 방법
+3. 데이터를 표시하는 방법
+4. 조건부 랜더링과 목록 랜더링 방법
+5. 이벤트에 응답하고 화면을 업데이트하는 방법
+6. component 간에 데이터를 공유하는 방법
+
+⚠ 공식 사이트의 "학습하기(Learn)" 참고
+<br>
+
+**2. Component의 생성 및 중첩(nesting)**
+- 2장에서 살펴본 것과 같이 React앱은 component로 만들어집니다.
+- component는 <u>고유한 로직과 모양을 가진 UI의 일부</u>입니다.
+- component는 <u>버튼처럼 작을 수도</u> 있고, <u>전체 페이지처럼 클 수도</u> 있습니다.
+- component는 <u>마크업을 반환(return)하는 JavaScript 함수</u>입니다.
+- <u>Nesting</u>은 CSS 선택자의 중첩 구조를 생각하면 쉽게 이해할 수 있습니다.
+    - CSS 중첩 구조는 2023년 부터 자체 지원합니다. 이전에는 Sass나 Lass 등을 이용할 때 사용했습니다.
+    ```css
+    .container {
+        background: blanchedalmond;
+    }
+
+    .container > .foo {
+        color: red;
+    }
+
+    .container > .foo > .bar {
+        color: blueviolet;
+    }
+    ```
+    ▼
+    ```css
+    .container {
+        background: blanchedalmond;
+
+        & .foo {
+            color: red;
+
+            & .bar {
+                color: blueviolet;
+            }
+        }
+    }
+    ```
+- **export default 선언의 위치는 어디가 좋을까?**
+- <u>VS Code에서 자동 완성</u>을 하면 위와 같이 <u>맨 아래 선언</u>되는 것을 확인할 수 있습니다.
+- 하지만 <u>공식 문서처럼</u> main component의 <u>function 키워드 왼쪽에 선언</u>하는 것이 좋습니다.
+- 특히 <u>한 파일에 여러 개의 component가 있을 경우</u>라면 이렇게 하는 것이 <u>가독성에 유리</u>합니다.
+    ```javascript
+    function App() {
+        return (
+            <div>
+                <h1>Welcome to my app</h1>
+                <MyButton />
+            </div>
+        )
+    }
+
+    export default App
+    ```
+    ▼
+    ```javascript
+    export default function App() {
+        return (
+            <div>
+                <h1>Welcome to my app</h1>
+                <MyButton />
+            </div>
+        )
+    }
+    ```
+
+- <u>export default 키워드</u>는 파일내의 component 중 <u>기본 component를 지정</u>합니다.
+- 이 키워드의 사용도 <u>JavaScript 문법</u>입니다.
+- 좀 더 구체적으로 알고 싶다면 사이트의 MDN 혹은 javascript.info 링크를 확인하세요.
+<br>
+
+*[export default와 export의 차이]*
+- <u>Named Exports</u>(export)
+    - <u>하나의 파일안에 여러개의 component가 있을 때 사용</u>합니다.
+    - component를 <u>사용하는 쪽에서는 component 정확한 이름을 명시</u>해야합니다.
+    - 예) imnport { add, subtract, multiply, divide } from './math'
+
+- <u>Default Exports<u>(export default)
+    - <u>하나의 파일안에서 하나의 component만 내보내는 경우 사용</u>합니다.
+    - component를 <u>사용하는 쪽에서는 어떤 이름을 사용해도 상관없습니다.</u>
+    - 예) import calc from './calculator'
+
+- 예제 코드에서 <u>MyButton Component만 분리</u>합니다.
+- 어떤 과정을 거쳐야 하는지 생각하면서, 예제 코드와 <u>같은 결과가 나오도록 수정</u>합니다.
+    ```javascript
+    export default function MyButton() {
+        return (
+            <button>I'm a Button</button>
+        )
+    }
+    ```
+    ```javascript
+    import MyB from "./MyButton.js"
+
+    export default function App() {
+        return (
+            <div>
+                <h1>Welcomt to my app</h1>
+                <MyB />
+            </div>
+        )
+    }
+    ```
+- <u>Default Exports</u>이기 때문에 import할 때는 <u>어떤 이름을 사용해도 상관없습니다.</u>
+- 다만 convention을 달리할 경우 가독성이 떨어지기 때문에 <u>대문자로 시작</u>하는 것이 좋습니다.
+<br>
+
+- 다음은 <u>ButtonLib라는 component</u>를 새로 만듭니다.
+- 내용은 <u>Named Exports의 button component 3개</u> 만듭니다.
+- ButtonLib에 선언한 component를 <u>2개만 App으로 중첩</u>해 봅니다.
+```javascript
+function Button1() {
+    return (
+        <button>Button 1</button>
+    )
+}
+
+function Button2() {
+    return (
+        <button>Button 2</button>
+    )
+}
+
+function Button3() {
+    return (
+        <button>Button 3</button>
+    )
+}
+
+export { Button1, Button2, Button3 };
+```
+```javascript
+import MyB from "./MyButton.js"
+import { Button1, Button3 } from "./ButtonLib.js";
+
+export default function App() {
+  return (
+    <div>
+      <h1>Hello React</h1>
+      <MyB />
+      <Button1 />
+      <Button3 />
+    </div>
+  );
+}
+```
+
+**3. JSX로 마크업 작성하기**
+- 앞에서 작성한 코드의 <u>마크업 문법을 JSX</u>라고 합니다.
+- 반드시 사용해야 하는 것은 아니지만, React 프로젝트에서는 <u>편의성을 위해 JSX를 사용</u>합니다.
+- JSX는 HTML보다 더욱 엄격한 문법을 적용</u>합니다.
+- JSX에서는 <u><br /> 같이 싱글 태그라도 태그를 닫아야</u> 합니다.
+- React에서는 <u>여러개의 component를 JSX태그로 반환할 수</u> 있습니다.
+- 다만 여러개의 component를 <u><div>...</div> 또는 빈 <>...</> wrapping 해줘야</u> 합니다.
+<br>
+
+- AboutPage component를 작성합니다.
+    ```javascript
+    export default function AboutPage() {
+        return (
+            <>
+                <h1>About</h1>
+                <p>Hello there.<br />How do you do?</p>
+            </>
+        );
+    }
+    ```
+- 이 component를 화면에서 확인하려면 App.js에서 불러오면 가능하다.
+
+**4. 스타일 추가하기**
+- React에서는 <u>className으로 CSS 클래스를 지정</u>합니다.
+    ```css
+    <img className="avatar" />
+    ```
+- className은 <u>HTML의 class 속성과 동일한 방식으로 동작</u>합니다.
+- CSS 규칙은 별도의 CSS 파일에 작성합니다. 그런데 React는 <u>CSS 파일을 추가하는 방법을 규정하지는 않습니다.</u>
+    - 정작 페이지를 작성할 때와 동일한 방법을 지원합니다.
+    ```css
+    /* In your CSS */
+    .avatar {
+        border-radius: 50%;
+    }
+    ```
+- 가장 간단한 방법은 HTML에 <link> 태그를 추가하는 것입니다.
+    - 그러나 link를 추가하면 정적 페이지를 수정해야 하기 때문에 <u>추천하지 않습니다.</u>
+    - React를 <u>사용할 수 있는 여러가지 방법은 뒤에서 알아보도록</u> 하겠습니다.
+- 만일 빌드 도구나 프레임워크를 사용한다면 해당 문서를 참고하여 프로젝트에 CSS 파일을 추가합니다.
+
+**5. 데이터 표시하기**
+- <u>JSX를 사용하면 자바스크립트에 마크업을 넣을 수</u> 있습니다.
+    - 반대 아닌가? <u>JS안의 마크업 안에 JS를 넣는</u>다는 것이 더 정확합니다. 
+- JSX 코드 내에서 <u>JavaScript로 "탈출"하여 변수나 표현식을 사용</u>하는 것입니다.
+- 이 방법을 "<u>Escape Back</u>"이라고 합니다.
+- <u>{} 중괄호를 사용</u>해서 변수나 표현식을 사용자에게 표시하도록 하는 것입니다.
+    ```javascript
+    return (
+        <h1>
+            {user.name} // 자바스크립트 이스케이프
+        </h1>
+    );
+
+    ------------------------------
+
+    return (
+        <img
+            className="avatar"
+            src={user.imageUrl}
+        />
+    );
+    ```
+- src 속성에 <u>user.imageUrl 변수의 값을 전달</u>하여 <u>이미지의 경로를 설정</u>하고 있습니다.
+- 반면에 className="avatar"는 <u>단순히 문자열을 전달</u>하는 경우에는 중괄호 대신 큰 따옴표를 사용합니다.
+- 스타일을 추가하기 위해서는 <u>import 키워드를 이용해서 파일 경로를 작성하면 됩니다.</u>
+
+**6. 조건부 렌더링**
+- React에서 조건문을 작성하는 데에는 특별한 문법이 필요 없습니다.
+- <u>일반적인 자바스크립트 코드를 작성할 때 사용하는 것과 동일한 방법을 사용합니다.
+
+**7. 리스트 렌더링하기**
+- 컴포넌트 <u>리스트를 렌더링</u>하기 위해서는 <u>for 문 및 map() 함수</u>와 같은 자바스크립트 기능을 사용합니다.
+- <u><li>에 key 속성(attribute)</u>이 있는 것을 주목하세요.
+- 목록을 사용할 때는 <u>각 항목에 대해 고유하게 식별하는 문자열 또는 숫자를 전달</u>해야 합니다.
+- <u>항목을 삽입, 삭제 또는 재정렬할 때</u> 어떤 일이 일어났는지 알기 위해 key를 사용</u>합니다.
+- 이것을 <u>key props</u>라고 하는데, 자세한 내용은 props를 학습할 때 자세히 다룹니다.
+
+<hr>
+
 ## 25년 3월 20일 강의
 > 내용 정리
 
@@ -240,7 +476,7 @@ $ npm install
 2. 이 외에 코드 에디터와 웹 브라우저만 준비하면 개발 환경 구축은 완료
 
 **React Project 생성** <br>
-React Project 생성 명령(CRA): npx create-react-app $\lt$project-name$\gt$ <br>
+React Project 생성 명령(CRA): npx create-react-app \< project-name \> <br>
 React 시작 명령어는 프로젝트 디렉토리에서 npm start <br>
 
 <hr>
