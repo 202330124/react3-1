@@ -1,5 +1,115 @@
 # 202330124 이태규
 
+## 25년 4월 3일 강의
+> 내용 정리
+
+**8. 이벤트에 응답하기**
+- component 내부에 <u>event handler 함수를 선언하면 event에 응답할</u> 수 있습니다.
+- <u>onClick={handleClick}의 끝에 소괄호()가 없는 것</u>을 주목하세요!
+- <u>함수를 호출하지 않고 전달만</u> 하면 됩니다.
+- React는 사용자가 <u>버튼을 클릭할 때 이벤트 핸들러를 호출</u>합니다.
+
+**9. 화면 업데이트하기**
+- component가 <u>특정 정보를 "기억"해 두었다가 표시</u>하기를 원하는 경우가 있습니다.
+- 예를 들어 <u>버튼이 클릭된 횟수</u>를 세고 싶을 수 있습니다.
+- 이렇게 하려면 <u>component에 state를 추가</u>하면 됩니다.
+
+- 먼저, React에서 <u>useState를 import</u>합니다.
+    ```javascript
+    import { useState } from 'react';
+    ```
+- 이 코드를 보면 <u>useState는 react 파일 안에 Named Exports로 선언되어 있는 여러개의 component중 하나</u>라는 것을 알 수 있습니다.
+- 이제 <u>component 내부에 state 변수를 선언</u>할 수 있습니다.
+    ```javascript
+    function MyButton() {
+        const [count, setCount] = useState(0);
+        // ...
+    }
+    ```
+
+- <u>useState로부터</u> 현재의 <u>state를 저장할 수 있는 변수</u>인 count와 이를 <u>업데이트할 수 있는 함수</u>인 setCount를 <u>얻을 수 있습니다.</u>
+- <u>이름은 자유롭게 지정할 수</u> 있지만 <u>[something, setSomething]으로 작성하는 것이 일반적입니다.</u>
+- 즉, <u>변수 이름과 변수 이름 앞에 set을 붙인 업데이트 함수를 관용적으로 사용</u>합니다.
+
+- 버튼이 처음 표시될 때는 <u>useState()에 0을 전달</u>했기 때문에 count가 0이 됩니다.
+- state를 변경하고 싶다면 <u>setCount를 실행하고 새 값을 전달</u>하세요.
+- 이 <u>버튼을 클릭하면 카운터가 증가</u>합니다.
+    ```javascript
+    function Button() {
+        const [count, setCount] = useState(0);
+
+        function handleClick() {
+            setCount(count + 1);
+        }
+
+        return (
+            <button onClick={handleClick}>
+                Clicked {count} times
+            </button>
+        );
+    }
+    ```
+
+**10. Hook 사용하기**
+- <u>use로 시작하는 함수</u>를 Hook이라고 합니다.
+- useState는 React에서 제공하는 <u>내장 Hook</u>입니다.
+- 다른 내장 Hook은 API 참고서에서 찾아볼 수 있습니다.
+- 또한 기존의 것들을 조합하여 <u>자신만은 Hook을 작성할 수</u>도 있습니다. 사용자 Hook.
+
+- Hook은 <u>다른 함수보다 더 제한적</u>입니다.
+예를 들면,
+- component 또는 다른 Hook의 <u>상단에서만 Hook을 호출</u>할 수 있습니다.
+- 조건이나 반복문에서 useState를 사용하고 싶다면 새 컴포넌트를 추출하여 그곳에 넣으세요.
+
+*[Hooks의 사용 규칙(Rules of Hooks)]*
+- Hook은 React의 <u>렌더링 및 상태 관리 매커니즘과 밀접하게 연결</u>되어 있으며, 아래와 같은 규칙을 따라야 합니다.
+
+1. <u>최상위에서만 호출</u>해야 한다.
+⚠ <u>if, for, while 등의 블록 내부에서 Hooks를 호출하면 안됩니다.</u>
+⚠ 함수의 조건문 <u>내부에서 호출하면 실행 순서가 달라질 수 있기 때문</u>입니다.
+
+2. <u>React 함수형 component</u> 또는 <u>사용자 Hook 내부에서만 사용 가능</u>
+⚠ <u>일반적인 JavaScript 함수</u>에서 useState, useEffect 등의 <u>Hook을 사용할 수 없습니다.</u>
+
+⚠ 왜 이런 제한이 필요한가?
+- React의 <u>동작을 예측 가능하고, 안정성을 높이기 위해</u> 필요한 규칙입니다.
+
+1. rendering 순서를 보장하기 위해
+    <u>조건문이나 반복문 안에서 Hooks를 사용하면</u> 매 rendering마다 <u>Hook의 호출 순서가 달라질 수 있기 때문</u>에 React가 <u>상태를 제대로 추적할 수 없습니다.</u>
+
+2. 불필요한 사이드 이펙트 방지
+    component가 <u>여러번 rendering 될 때마다 동일한 순서로 Hook이 실행되어야</u> React가 <u>의도한 동작을 수행할 수</u> 있습니다.
+
+*[왜 function형 컴포넌트에서만 Hook을 사용할까?]*
+- <u>Class형 component는 lifecycle 함수를 통해서 상태 관리</u>를 했습니다.
+- 그런 이유때문에 <u>Class형 component는 유지보수가 어렵고 복잡해질 수 있었습니다.</u>
+- React는 component의 <u>상태 관리(lifecycle)와 로직을 더 간결하게 만들기 위해 Hooks를 도입</u>하게 됩니다.
+- 따라서 <u>React 팀은 function형 component를 권장</u>하고 있습니다.
+- <u>Hook은 function형 component 전용으로 설계</u>되었습니다.
+
+⚠ 이런 이유때문에 function형 component에서만 Hook을 사용하는 것입니다.
+
+**11. Component 간 데이터 공유**
+- <u>공식 문서에서는 MyButton과 MyApp을 계속 수정</u>해 가면서 설명을 하고 있어서 <u>이전 상태를 확인하기가 어렵습니다.</u>
+- 물론 변경이 있을 때마다 꼼꼼히 <u>commit을 해두면 checkout을 통해서 확인이 가능합니다.</u>
+- 다만 이 경우 <u>checkout을 반복해야 하기 때문에 확인하는데 불편</u>합니다.
+
+⚠ 따라서 <u>실습은 꼭 필요한 경우를 제외하고는 별도의 component를 만들어 사용</u>하겠습니다.
+
+- 사이트에서는 MyButton으로 설명하고 있지만, <u>우리는 CountState로 작성</u>했던 것을 기억하고 사이트의 설명을 봐야 합니다.
+- 9절에서 <u>"왜 변수는 count 하나인데 버튼 3개의 데이터가 모두 다른 state를 갖는 것일까?"</u>라는 의문이 있었습니다.
+- 각각의 <u>CountState component는 독립적인 count가 있는 것처럼 동작</u>했고, 각 버튼을 클릭하면 <u>클릭한 버튼의 count만 변경</u>되었습니다.
+- <u>그러나 이것은 이상한 것이 아닙니다.</u> 각 component <u>객체가 독립적으로 동작하기 때문</u>입니다.
+- component는 하나지만 count 변수도 객체로 여러개 복사된 것이나 마찬가지이기 때문입니다.
+
+- 하지만 <u>데이터를 공유하고 항상 함께 업데이트</u>하기 위한 component가 필요한 경우가 많습니다.
+- 두 개의 CountState2 component가 <u>동일한 count를 표시하고 함께 업데이트</u>하려면, <u>state를 개별 버튼에서 모든 버튼이 포함된 가장 가까운 component 안으로 이동</u>해야 합니다.
+- 여기서 이야기하는 제일 가까운 component는 </u>App component</u>입니다.
+⚠ 외부에서 두 개 호출하는 것이 아니라, <u>내부에서 같은 count변수를 사용</u>하는 것입니다.
+
+
+<hr>
+
 ## 25년 3월 27일 강의
 > 내용 정리
 

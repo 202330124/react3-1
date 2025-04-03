@@ -38,5 +38,12 @@
 }
 
 .wrapper {
-  margin: 0 auto;
+  width: 25%;
+  margin: auto;
+  text-align: center;
+}
+
+.wrapper > div {
+  width: 50%;
+  float: left;
 }

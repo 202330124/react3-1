@@ -1,5 +1,11 @@
 export default function MyButton() {
+    function handleClick() {
+        alert("You Clicked me!");
+    }
+
     return (
-        <button>I'm My Button Component</button>
-    );
+        <button onClick={handleClick}>
+            I'm a button
+        </button>
+    )
 }
