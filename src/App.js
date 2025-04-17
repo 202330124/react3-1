@@ -7,5 +7,5 @@ export default function App() {
       <h1>Tic Tac Toe</h1>
       <Board />
     </div>
-  )
+  );
 }
